@@ -1,41 +1,33 @@
-import React, { createContext, useContext, useState } from 'react';
-import { CertificateContextType, CertificateElement } from '../types/types';
+import React, { createContext, useState } from "react";
+import { CertificateContextType, CertificateElement, ThemeType } from "../types/types";
+
+// Create a default empty context
 const CertificateContext = createContext<CertificateContextType | undefined>(undefined);
 
+// Provider implementation
 export const CertificateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [elements, setElements] = useState<CertificateElement[]>([]);
-  const [selectedElement, setSelectedElement] = useState<string | null>(null);
-
-  const addElement = (element: CertificateElement) => {
-    setElements([...elements, element]);
-  };
-
-  const updateElement = (id: string, updates: Partial<CertificateElement>) => {
-    setElements(elements.map(el => el.id === id ? { ...el, ...updates } : el));
-  };
-
-  const removeElement = (id: string) => {
-    setElements(elements.filter(el => el.id !== id));
-    if (selectedElement === id) setSelectedElement(null);
-  };
+  const [currentTheme, setCurrentTheme] = useState<ThemeType>({ backgroundColor: "white", borderColor: "black", name: "default", primaryColor: "black", secondaryColor: "white", fontFamily: "Arial" });
   
+  const undo = () => { /* Implementation for undo */ };
+  const redo = () => { /* Implementation for redo */ };
+  const canUndo = false; // Update with actual logic
+  const canRedo = false; // Update with actual logic
+  const selectedElement = undefined; // Update with actual selected element logic
 
   return (
     <CertificateContext.Provider value={{
       elements,
-      addElement,
-      updateElement,
-      removeElement,
+      setElements,
+      currentTheme,
+      setCurrentTheme,
+      undo,
+      redo,
+      canUndo,
+      canRedo,
       selectedElement,
-      setSelectedElement
     }}>
       {children}
     </CertificateContext.Provider>
   );
-};
-
-export const useCertificate = () => {
-  const context = useContext(CertificateContext);
-  if (!context) throw new Error('useCertificate must be used within a CertificateProvider');
-  return context;
 };

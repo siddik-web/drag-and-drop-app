@@ -29,17 +29,22 @@ export type ThemeType = {
   borderColor: string;
 };
 export type CertificateTemplate = {
+  previewImage: string | undefined;
   id: string;
   name: string;
   elements: CertificateElement[];
   theme: ThemeType;
 };
 
-export type CertificateContextType = {
+export interface CertificateContextType {
   elements: CertificateElement[];
-  addElement: (element: CertificateElement) => void;
-  updateElement: (id: string, updates: Partial<CertificateElement>) => void;
-  removeElement: (id: string) => void;
-  selectedElement: string | null;
-  setSelectedElement: (id: string | null) => void;
-};
+  setElements: (update: React.SetStateAction<CertificateElement[]>) => void;
+  currentTheme: ThemeType;
+  setCurrentTheme: (update: React.SetStateAction<ThemeType>) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  selectedElement?: CertificateElement;
+}
+
