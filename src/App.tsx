@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import { useCertificate } from "./hooks/useCertificate";
 import { Toolbar } from "./components/Toolbar";
 import { DroppableCanvas } from "./components/DroppableCanvas";
@@ -25,6 +25,14 @@ const CertificateBuilder: React.FC = () => {
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const [showTemplates, setShowTemplates] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   const handleTemplateSelect = (template: CertificateTemplate) => {
     if (setElements && setCurrentTheme) {
@@ -67,8 +75,8 @@ const CertificateBuilder: React.FC = () => {
 
       // Calculate accurate drop position
       const canvasRect = canvasRef.current?.getBoundingClientRect();
-      const dropPositionX = event.delta.x + (canvasRect?.left || 0);
-      const dropPositionY = event.delta.y + (canvasRect?.top || 0);
+      const dropPositionX = event.delta.x - (canvasRect?.left || 0);
+      const dropPositionY = event.delta.y - (canvasRect?.top || 0);
 
       if (setElements) {
         setElements((prevElements) => [
@@ -141,8 +149,8 @@ const CertificateBuilder: React.FC = () => {
           </button>
           <div className="relative group">
             <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-              Export
-            </button>
+            Export
+          </button>
             <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg hidden group-hover:block">
               {Object.keys(exportFormats).map((format) => (
                 <button
@@ -161,7 +169,7 @@ const CertificateBuilder: React.FC = () => {
       {showTemplates ? (
         <TemplateSelector onSelect={handleTemplateSelect} />
       ) : (
-        <DndContext onDragEnd={handleDragEnd}>
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <div className="flex gap-8">
             <div className="w-3/4">
               <Toolbar />
@@ -185,10 +193,8 @@ const CertificateBuilder: React.FC = () => {
                 <StylePanel
                   element={selectedElement}
                   onUpdate={(updates: Partial<CertificateElement>) => {
-                    const currentElement = elements.find((el) => el.id === selectedElement.id);
-                    if (currentElement) {
-                      handleElementUpdate({ ...currentElement, ...updates });
-                    }
+                    const updatedElement = { ...selectedElement, ...updates };
+                    handleElementUpdate(updatedElement);
                   }}
                 />
               )}

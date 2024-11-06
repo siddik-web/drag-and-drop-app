@@ -1,12 +1,19 @@
 import React from 'react';
 import { DraggableElement } from './DraggableElement';
 
+const TOOL_TYPES = {
+  TITLE: 'title',
+  TEXT: 'text',
+  SIGNATURE: 'signature',
+  DATE: 'date',
+};
+
 export const Toolbar: React.FC = () => {
   const tools = [
-    { id: 'title-tool', type: 'title' as const, content: 'Certificate Title' },
-    { id: 'text-tool', type: 'text' as const, content: 'Add Text' },
-    { id: 'signature-tool', type: 'signature' as const, content: 'Add Signature' },
-    { id: 'date-tool', type: 'date' as const, content: 'Add Date' },
+    { id: 'title-tool', type: TOOL_TYPES.TITLE, content: 'Certificate Title' },
+    { id: 'text-tool', type: TOOL_TYPES.TEXT, content: 'Add Text' },
+    { id: 'signature-tool', type: TOOL_TYPES.SIGNATURE, content: 'Add Signature' },
+    { id: 'date-tool', type: TOOL_TYPES.DATE, content: 'Add Date' },
   ];
 
   return (

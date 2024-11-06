@@ -15,9 +15,7 @@ export const DroppableCanvas: React.FC = () => {
   const handleUpdateElement = useCallback(
     (id: string, updates: Partial<CertificateElement>) => {
       setElements((prevElements) =>
-        Array.isArray(prevElements) 
-          ? prevElements.map((el) => (el.id === id ? { ...el, ...updates } : el))
-          : [] // Fallback to empty array if elements is not an array
+        prevElements.map((el) => (el.id === id ? { ...el, ...updates } : el))
       );
     },
     [setElements]

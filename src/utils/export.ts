@@ -14,31 +14,35 @@ export const exportCertificate = async (
 ) => {
   if (!canvasRef.current) return;
 
-  switch (format) {
-    case 'PDF': {
-      const { jsPDF } = await import('jspdf');
-      const canvas = await html2canvas(canvasRef.current);
-      const doc = new jsPDF({
-        orientation: 'landscape',
-        unit: 'px',
-        format: [canvas.width, canvas.height],
-      });
+  try {
+    switch (format) {
+      case 'PDF': {
+        const { jsPDF } = await import('jspdf');
+        const canvas = await html2canvas(canvasRef.current);
+        const doc = new jsPDF({
+          orientation: 'landscape',
+          unit: 'px',
+          format: [canvas.width, canvas.height],
+        });
 
-      doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width, canvas.height);
-      doc.save('certificate.pdf');
-      break;
+        doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width, canvas.height);
+        doc.save('certificate.pdf');
+        break;
+      }
+      case 'PNG': {
+        const canvas = await html2canvas(canvasRef.current);
+        canvas.toBlob((blob) => {
+          if (blob) saveAs(blob, 'certificate.png');
+        });
+        break;
+      }
+      case 'JSON': {
+        const blob = new Blob([JSON.stringify(certificateData)], { type: 'application/json' });
+        saveAs(blob, 'certificate.json');
+        break;
+      }
     }
-    case 'PNG': {
-      const canvas = await html2canvas(canvasRef.current);
-      canvas.toBlob((blob) => {
-        if (blob) saveAs(blob, 'certificate.png');
-      });
-      break;
-    }
-    case 'JSON': {
-      const blob = new Blob([JSON.stringify(certificateData)], { type: 'application/json' });
-      saveAs(blob, 'certificate.json');
-      break;
-    }
+  } catch (error) {
+    console.error("Export failed:", error);
   }
 };

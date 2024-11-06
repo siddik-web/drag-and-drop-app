@@ -12,55 +12,42 @@ interface Props {
 
 export const EditableElement: React.FC<Props> = ({ element, onUpdate, isSelected, onSelect }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: element.id });
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({ 
+    id: element.id,
+    data: element
+  });
   const { dimensions, handleResize } = useResizable(element.dimensions);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Focus the input when entering edit mode
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isEditing]);
 
-  // Set up debounced update for the content
   const handleContentChange = useCallback((newContent: string) => {
-    // Only update if content has changed, and if not empty
-    if (newContent !== undefined && newContent !== element.content) {
+    if (newContent !== element.content) {
       onUpdate({ content: newContent });
     }
   }, [element.content, onUpdate]);
 
-  // Handle editing state exit with Enter or Escape keys
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' || event.key === 'Escape') {
-      setIsEditing(false);
-      inputRef.current?.blur();
-    }
-  };
-
-  // Handle delete key to prevent empty content from being saved
-  const handleDeleteKey = (event: React.KeyboardEvent) => {
-    if (event.key === 'Delete' && inputRef.current && inputRef.current.value === '') {
-      // Prevent deletion of content if input is empty, or manage as desired
+    if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
+      setIsEditing(false);
+    } else if (event.key === 'Escape') {
+      setIsEditing(false);
     }
   };
 
-  // Dynamic styles for the element
-  const style = {
+  const style: React.CSSProperties = {
     ...element.style,
     transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
     width: dimensions.width,
     height: dimensions.height,
-    position: 'absolute' as const,
+    position: 'absolute',
     left: element.position.x,
     top: element.position.y,
-  };
-
-  // Activate editing mode on double-click
-  const handleDoubleClick = () => {
-    setIsEditing(true);
   };
 
   return (
@@ -76,13 +63,10 @@ export const EditableElement: React.FC<Props> = ({ element, onUpdate, isSelected
       {isEditing ? (
         <textarea
           ref={inputRef}
-          value={element.content}  // Controlled value
-          onChange={(e) => handleContentChange(e.target.value)}  // Updating content correctly
-          onKeyDown={(e) => {
-            handleKeyDown(e);  // Handle Enter/Escape
-            handleDeleteKey(e);  // Handle Delete key
-          }}
-          onBlur={() => setIsEditing(false)}  // Blur to exit edit mode
+          value={element.content}
+          onChange={(e) => handleContentChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={() => setIsEditing(false)}
           className="w-full h-full p-2 border rounded resize-none"
           style={element.style}
         />
@@ -90,14 +74,13 @@ export const EditableElement: React.FC<Props> = ({ element, onUpdate, isSelected
         <div
           {...listeners}
           {...attributes}
-          onDoubleClick={handleDoubleClick}
+          onDoubleClick={() => setIsEditing(true)}
           className="cursor-move p-2"
         >
-          {element.content}  {/* Display content */}
+          {element.content}
         </div>
       )}
 
-      {/* Resizable handlers, shown only if selected */}
       {isSelected && (
         <>
           <div
