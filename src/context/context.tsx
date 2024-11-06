@@ -5,6 +5,7 @@ const CertificateContext = createContext<CertificateContextType | undefined>(und
 export const CertificateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [elements, setElements] = useState<CertificateElement[]>([]);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
+
   const addElement = (element: CertificateElement) => {
     setElements([...elements, element]);
   };
@@ -15,10 +16,19 @@ export const CertificateProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const removeElement = (id: string) => {
     setElements(elements.filter(el => el.id !== id));
+    if (selectedElement === id) setSelectedElement(null);
   };
+  
 
   return (
-    <CertificateContext.Provider value={{ elements, addElement, updateElement, removeElement, selectedElement, setSelectedElement }}>
+    <CertificateContext.Provider value={{
+      elements,
+      addElement,
+      updateElement,
+      removeElement,
+      selectedElement,
+      setSelectedElement
+    }}>
       {children}
     </CertificateContext.Provider>
   );
