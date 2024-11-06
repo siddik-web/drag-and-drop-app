@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { Toolbar } from './components/Toolbar';
+import { DroppableCanvas } from './components/DroppableCanvas';
+import { CertificateElement } from './types/types';
+import { CertificateProvider, useCertificate } from './context/context';
 
-function App() {
-  const [count, setCount] = useState(0)
+const CertificateBuilder: React.FC = () => {
+  const { addElement } = useCertificate();
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && over.id === 'certificate-canvas') {
+      const { type, content } = active.data.current as { type: CertificateElement['type']; content: string };
+      
+      addElement({
+        id: `${type}-${Date.now()}`,
+        type,
+        content,
+        position: {
+          x: event.delta.x,
+          y: event.delta.y,
+        },
+        dimensions: {
+          width: 200,
+          height: 100,
+        },
+        style: {
+          color: '#000000',
+        },
+      });
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="container mx-auto p-8">
+      <h1 className="text-3xl font-bold mb-8">Certificate Builder</h1>
+      <DndContext onDragEnd={handleDragEnd}>
+        <div className="flex flex-col gap-8">
+          <Toolbar />
+          <DroppableCanvas />
+        </div>
+      </DndContext>
+    </div>
+  );
+};
 
-export default App
+export const App: React.FC = () => (
+  <CertificateProvider>
+    <CertificateBuilder />
+  </CertificateProvider>
+);
+
+export default App;
