@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import UserProfile from './UserProfile'; // Import UserProfile component
@@ -6,18 +6,29 @@ import './DraggableList.css';
 import DraggableItem from './DraggableItem';
 
 const DraggableList: React.FC = () => {
-  const [items, setItems] = useState<string[]>([
-    'Alice Smith',
-    'Bob Johnson',
-    'Charlie Brown',
-    'Diana Prince',
-    'Ethan Hunt',
-    'Fiona Gallagher',
-    'George Costanza',
-    'Hannah Montana',
-    'Isaac Newton',
-  ]);
+  const [items, setItems] = useState<string[]>([]);
   const [newItem, setNewItem] = useState<string>('');
+
+  // Load items from local storage on component mount
+  useEffect(() => {
+    const storedItems = localStorage.getItem('draggableListItems');
+    if (storedItems) {
+      setItems(JSON.parse(storedItems));
+    } else {
+      // Default items if none are found in local storage
+      setItems([
+        'Alice Smith',
+        'Bob Johnson',
+        'Charlie Brown',
+        'Diana Prince',
+        'Ethan Hunt',
+        'Fiona Gallagher',
+        'George Costanza',
+        'Hannah Montana',
+        'Isaac Newton',
+      ]);
+    }
+  }, []);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -49,15 +60,25 @@ const DraggableList: React.FC = () => {
   };
 
   const addItem = (newItem: string) => {
-    setItems((items) => [...items, newItem]);
+    setItems((items) => {
+      const updatedItems = [...items, newItem];
+      localStorage.setItem('draggableListItems', JSON.stringify(updatedItems)); // Save to local storage
+      return updatedItems;
+    });
   };
 
   const removeItem = (itemToRemove: string) => {
-    setItems((items) => items.filter(item => item !== itemToRemove));
+    setItems((items) => {
+      const updatedItems = items.filter(item => item !== itemToRemove);
+      localStorage.setItem('draggableListItems', JSON.stringify(updatedItems)); // Save to local storage
+      return updatedItems;
+    });
   };
 
   const resetItems = () => {
-    setItems(['John Doe', 'Jane Doe', 'Jim Doe']);
+    const defaultItems = ['John Doe', 'Jane Doe', 'Jim Doe'];
+    setItems(defaultItems);
+    localStorage.setItem('draggableListItems', JSON.stringify(defaultItems)); // Save to local storage
   };
 
   return (
