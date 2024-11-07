@@ -16,7 +16,7 @@ const CertificateCanvas: React.FC = () => {
           id={element.id}
           type={element.type}
           label={element.type}
-          style={{ zIndex: index + 1 }} // Set z-index based on order
+          style={{ zIndex: index + 1 }} 
         />
       ))}
     </div>

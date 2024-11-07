@@ -5,6 +5,7 @@ interface DraggableItemProps {
   id: string;
   type: 'text' | 'image' | 'shape';
   label: string;
+  style?: React.CSSProperties;
 }
 
 const DraggableItem: React.FC<DraggableItemProps> = ({ id, type, label }) => {
