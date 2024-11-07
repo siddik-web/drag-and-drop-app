@@ -1,3 +1,4 @@
+// src/components/CertificateBuilder.tsx
 import React from 'react';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import useCertificate from '../hooks/useCertificate';

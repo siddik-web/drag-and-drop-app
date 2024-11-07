@@ -45,8 +45,14 @@
   overflow: hidden;
 }
 
+
+.certificate-canvas .draggable-item {
+  position: absolute;
+  cursor: pointer;
+}
+
 .certificate-canvas:before {
-  content: 'Certificate Preview';
+  content: 'Preview';
   display: block;
   text-align: center;
   font-size: 1.2rem;
