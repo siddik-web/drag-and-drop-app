@@ -1,11 +1,12 @@
 import { useContext } from 'react';
-import { CertificateContext } from '../context/CertificateContext';
-import { CertificateContextType } from '../types/types';
+import CertificateContext from '../context/CertificateContext';
 
-export const useCertificate = (): CertificateContextType => {
+const useCertificate = () => {
   const context = useContext(CertificateContext);
   if (!context) {
-    throw new Error("useCertificateContext must be used within a CertificateProvider");
+    throw new Error('useCertificate must be used within a CertificateProvider');
   }
   return context;
-};
+}; 
+
+export default useCertificate;

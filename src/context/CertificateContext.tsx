@@ -1,19 +1,35 @@
-import { createContext } from "react";
-import { CertificateContextType } from "../types/types";
-import { initialTheme } from "./theme";
+import React, { createContext, useState } from 'react';
 
+interface Element {
+  id: string;
+  type: 'text' | 'image' | 'shape';
+  content?: string;
+}
 
-// Default context value (placeholder functions)
-const defaultContextValue: CertificateContextType = {
-  elements: [],
-  setElements: () => {},
-  currentTheme: initialTheme,
-  setCurrentTheme: () => {},
-  undo: () => {},
-  redo: () => {},
-  canUndo: false,
-  canRedo: false,
+interface CertificateContextType {
+  elements: Element[];
+  addElement: (element: Element) => void;
+  updateElement: (id: string, newElement: Partial<Element>) => void;
+}
+
+const CertificateContext = createContext<CertificateContextType | undefined>(undefined);
+
+export const CertificateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [elements, setElements] = useState<Element[]>([]);
+
+  const addElement = (element: Element) => setElements((prev) => [...prev, element]);
+
+  const updateElement = (id: string, newElement: Partial<Element>) => {
+    setElements((prev) =>
+      prev.map((el) => (el.id === id ? { ...el, ...newElement } : el))
+    );
+  };
+
+  return (
+    <CertificateContext.Provider value={{ elements, addElement, updateElement }}>
+      {children}
+    </CertificateContext.Provider>
+  );
 };
 
-// Create the CertificateContext
-export const CertificateContext = createContext<CertificateContextType>(defaultContextValue);
+export default CertificateContext;
