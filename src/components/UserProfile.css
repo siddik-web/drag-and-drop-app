@@ -1,6 +1,7 @@
 .user-profile-card {
   display: flex;
   flex-direction: column;
+  width: 100%;
   align-items: center;
   padding: 20px;
   background-color: #ffffff; /* Modern white background for the profile card */
