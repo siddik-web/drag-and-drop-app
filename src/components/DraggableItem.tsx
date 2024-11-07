@@ -1,33 +1,28 @@
-import { useDraggable } from '@dnd-kit/core';
 import React from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface DraggableItemProps {
   id: string;
-  type: 'text' | 'image' | 'shape';
-  label: string;
-  style?: React.CSSProperties;
+  children: React.ReactNode;
 }
 
-const DraggableItem: React.FC<DraggableItemProps> = ({ id, type, label }) => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id,
-    data: { type, label },
-  });
+const DraggableItem: React.FC<DraggableItemProps> = ({ id, children }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
-  const style: React.CSSProperties = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    padding: '8px 16px',
-    marginBottom: '10px',
-    backgroundColor: type === 'text' ? '#fefcbf' : type === 'image' ? '#cbd5e0' : '#bee3f8',
-    border: '1px solid #cbd5e1',
-    borderRadius: '6px',
-    textAlign: 'center',
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    padding: '8px',
+    border: '1px solid #ccc',
+    marginBottom: '4px',
     cursor: 'pointer',
+    backgroundColor: '#fff',
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      {label}
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
     </div>
   );
 };

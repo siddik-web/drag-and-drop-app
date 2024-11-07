@@ -1,14 +1,12 @@
-
 import React from 'react';
-import { CertificateProvider } from './context/CertificateContext';
-import CertificateBuilder from './components/CertificateBuilder';
-import './App.css';
+import DraggableList from './components/DraggableList';
 
 const App: React.FC = () => {
   return (
-    <CertificateProvider>
-      <CertificateBuilder />
-    </CertificateProvider>
+    <div style={{ padding: '20px' }}>
+      <h1>Drag and Drop Example</h1>
+      <DraggableList />
+    </div>
   );
 };
 
