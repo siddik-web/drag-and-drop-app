@@ -1,0 +1,80 @@
+.draggable-list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  background-color: #ffffff; /* Clean white background for clarity */
+  border-radius: 12px; /* Softer corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Deeper shadow for more depth */
+  transition: transform 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
+}
+
+.draggable-list-container:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}
+
+.item-input {
+  padding: 12px;
+  border: 2px solid #007bff; /* Thicker border for better visibility */
+  border-radius: 6px;
+  margin-bottom: 15px;
+  width: 100%;
+  max-width: 350px;
+  font-size: 16px; /* Increased font size for readability */
+  margin-right: 10px; /* Space between input and buttons */
+}
+
+.button-container {
+  display: flex; /* Align buttons in a row */
+  justify-content: center; /* Center buttons horizontally */
+  gap: 10px; /* Space between buttons */
+  margin-top: 15px; /* Space above button container */
+  margin-bottom: 15px; /* Space below button container */
+}
+
+.add-button, .reset-button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #28a745; /* Green for positive actions */
+  color: white;
+  font-size: 16px; /* Consistent font size */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+}
+
+.add-button:hover, .reset-button:hover {
+  background-color: #218838; /* Darker green on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover for feedback */
+}
+
+.remove-button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #dc3545; /* Red for remove actions */
+  color: white;
+  font-size: 16px; /* Consistent font size */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+}
+
+.remove-button:hover {
+  background-color: #c82333; /* Darker red on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover for feedback */
+}
+
+
+.draggable-item-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 4px;
+  width: 100%;
+  max-width: 350px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  padding: 12px 15px;
+}

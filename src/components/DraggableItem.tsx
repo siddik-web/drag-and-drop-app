@@ -10,11 +10,9 @@ interface DraggableItemProps {
 const DraggableItem: React.FC<DraggableItemProps> = ({ id, children }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
-    padding: '8px',
-    border: '1px solid #ccc',
     marginBottom: '4px',
     cursor: 'pointer',
     backgroundColor: '#fff',

@@ -1,0 +1,88 @@
+.user-profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #ffffff; /* Modern white background for the profile card */
+  border-radius: 16px; /* Slightly more rounded corners */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Deeper shadow for a more modern look */
+  transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s; /* Smooth transition for hover effects */
+}
+
+.user-profile-card:hover {
+  transform: translateY(-5px); /* More pronounced lift effect on hover */
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+  background-color: #f0f0f0; /* Subtle background change on hover */
+}
+
+.user-avatar {
+  width: 120px; /* Increased width for a more prominent avatar */
+  height: 120px; /* Increased height for a more prominent avatar */
+  border-radius: 50%; /* Circular avatar */
+  margin-bottom: 20px; /* More space below the avatar */
+  border: 4px solid #e0e0e0; /* Light border around the avatar */
+}
+
+.user-name {
+  font-size: 26px; /* Slightly larger font size for the name */
+  font-weight: 600; /* Semi-bold text for emphasis */
+  margin: 8px 0; /* Increased margin for spacing */
+}
+
+.user-email {
+  font-size: 18px; /* Slightly larger font size for email */
+  color: #333; /* Darker color for email for better readability */
+  margin: 5px 0; /* Margin for spacing */
+}
+
+.user-bio {
+  font-size: 16px; /* Slightly larger font size for bio */
+  color: #555; /* Darker color for bio */
+  text-align: center; /* Centered text for bio */
+}
+
+/* New design variants with improved color combinations */
+.user-profile-card.variant-1 {
+  background-color: #b2ebf2; /* Soft cyan background */
+  border: 2px solid #00796b; /* Teal border */
+}
+
+.user-profile-card.variant-2 {
+  background-color: #ffe0b2; /* Soft peach background */
+  border: 2px solid #e65100; /* Deep orange border */
+}
+
+.user-profile-card.variant-3 {
+  background-color: #f8bbd0; /* Soft blush background */
+  border: 2px solid #c2185b; /* Pink border */
+}
+
+.user-profile-card.variant-4 {
+  background-color: #c8e6c9; /* Soft mint background */
+  border: 2px solid #388e3c; /* Green border */
+}
+
+.user-profile-card.variant-5 {
+  background-color: #e1bee7; /* Soft lavender background */
+  border: 2px solid #6a1b9a; /* Purple border */
+}
+
+.user-profile-card.variant-6 {
+  background-color: #fff9c4; /* Soft lemon background */
+  border: 2px solid #f57f17; /* Amber border */
+}
+
+.user-profile-card.variant-7 {
+  background-color: #bbdefb; /* Soft sky blue background */
+  border: 2px solid #0288d1; /* Blue border */
+}
+
+.user-profile-card.variant-8 {
+  background-color: #e0f2f1; /* Soft teal background */
+  border: 2px solid #00796b; /* Teal border */
+}
+
+.user-profile-card.variant-9 {
+  background-color: #e0f2f1; /* Soft teal background */
+  border: 2px solid #00796b; /* Teal border */
+}
