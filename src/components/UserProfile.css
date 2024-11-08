@@ -4,16 +4,30 @@
   width: 100%;
   align-items: center;
   padding: 20px;
-  background-color: #ffffff; /* Modern white background for the profile card */
+  background-color: #f9f9f9; /* Slightly off-white background for better contrast */
   border-radius: 16px; /* Slightly more rounded corners */
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Deeper shadow for a more modern look */
-  transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s; /* Smooth transition for hover effects */
+  transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s, border-color 0.3s; /* Smooth transition for hover effects */
+  border: 2px solid transparent; /* Solid border for a cleaner look */
+}
+
+.user-profile-card:focus-within {
+  border-color: #007bff; /* Blue border to indicate focus in edit mode */
+  background-color: #e9f7ff; /* Light blue background to indicate focus in edit mode */
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); /* Enhanced shadow on focus */
 }
 
 .user-profile-card:hover {
   transform: translateY(-5px); /* More pronounced lift effect on hover */
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
   background-color: #f0f0f0; /* Subtle background change on hover */
+}
+
+.user-profile-card input, .user-profile-card textarea{
+  border: none;
+  outline: none;
+  background-color: transparent;
+  font-size: 16px;
 }
 
 .user-avatar {

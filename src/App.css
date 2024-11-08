@@ -1,83 +1,83 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
 .app {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f9;
 }
 
 /* Element List Styles */
 .element-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-right: 20px;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-right: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .element-list .draggable-item {
-  padding: 10px 20px;
-  border-radius: 6px;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.2s;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 /* Certificate Canvas Styles */
 .certificate-canvas {
-  position: relative;
-  width: 600px;
-  height: 400px;
-  background-color: #ffffff;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
+    position: relative;
+    width: 600px;
+    height: 400px;
+    background-color: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
 }
 
-
 .certificate-canvas .draggable-item {
-  position: absolute;
-  cursor: pointer;
+    position: absolute;
+    cursor: pointer;
+    z-index: 1;
 }
 
 .certificate-canvas:before {
-  content: 'Preview';
-  display: block;
-  text-align: center;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #4a5568;
-  padding: 10px;
-  background-color: #edf2f7;
-  border-bottom: 1px solid #e2e8f0;
+    content: "Preview";
+    display: block;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #4a5568;
+    padding: 10px;
+    background-color: #edf2f7;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 /* Utility Class for Different Element Types */
 .text-element {
-  color: #4a5568;
-  background-color: #fefcbf;
+    color: #4a5568;
+    background-color: #fefcbf;
 }
 
 .image-placeholder {
-  width: 100px;
-  height: 60px;
-  background-color: #cbd5e0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.9rem;
-  color: #4a5568;
-  border: 1px dashed #a0aec0;
-  border-radius: 6px;
+    width: 100px;
+    height: 60px;
+    background-color: #cbd5e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #4a5568;
+    border: 1px dashed #a0aec0;
+    border-radius: 6px;
 }

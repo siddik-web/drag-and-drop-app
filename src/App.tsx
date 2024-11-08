@@ -1,9 +1,10 @@
-import React from 'react';
-import DraggableList from './components/DraggableList';
+import React from "react";
+import DraggableList from "./components/DraggableList";
+import "./App.css";
 
 const App: React.FC = () => {
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: "20px" }}>
       <h1>Drag and Drop Example</h1>
       <DraggableList />
     </div>
