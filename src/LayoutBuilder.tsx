@@ -1,13 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { 
-  Grip, X, Edit2, Check, Undo2, Redo2, 
-  Save, Upload, List, Columns, Square, Type, Image,
-  Eye, Edit3, Smartphone, Tablet, Monitor
+  X, Edit2, Check, Undo2, Redo2, 
+  Save, Upload, Eye, Edit3, Smartphone, Tablet, Monitor
 } from 'lucide-react';
 import { ListEditor } from './components/ListEditor';
 import StyleEditor from './components/StyleEditor';
 import { DraggableWidget } from './components/DraggableWidget';
-import { ToolbarItem } from './components/ToolbarItem';
 import { HistoryState, WidgetData, WidgetStyle, PreviewDevice } from './types/types';
 import { DevicePreview } from './components/DevicePreview';
 import { Toolbar } from './components/Toolbar';
