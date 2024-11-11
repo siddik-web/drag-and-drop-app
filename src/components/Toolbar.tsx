@@ -4,7 +4,7 @@ import { ToolbarItem } from './ToolbarItem';
 export const Toolbar = () => (
   <div className="w-64 p-4 border-r bg-gray-50">
     <h2 className="text-lg font-medium mb-4">Widgets</h2>
-    <div className="space-y-2">
+    <div className="space-y-2 overflow-y-auto max-h-[calc(100vh-10rem)]">
       <ToolbarItem type="heading" icon={<Type />} />
       <ToolbarItem type="paragraph" icon={<Type />} />
       <ToolbarItem type="image" icon={<Image />} />

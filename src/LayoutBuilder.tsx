@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { 
   X, Edit2, Check, Undo2, Redo2, 
   Save, Upload, Eye, Edit3, Smartphone, Tablet, Monitor
@@ -6,60 +6,19 @@ import {
 import { ListEditor } from './components/ListEditor';
 import StyleEditor from './components/StyleEditor';
 import { DraggableWidget } from './components/DraggableWidget';
-import { HistoryState, WidgetData, WidgetStyle, PreviewDevice } from './types/types';
+import { WidgetData, WidgetStyle, PreviewDevice } from './types/types';
 import { DevicePreview } from './components/DevicePreview';
 import { Toolbar } from './components/Toolbar';
+import { useHistory } from './hooks/useHistory';
+import { getDefaultContent } from './utils/defaultContent';
+import { getDefaultStyle } from './utils/defaultStyle';
 
 const LayoutBuilder = () => {
-  const [history, setHistory] = useState<HistoryState>({
-    past: [],
-    present: [],
-    future: []
-  });
-  
+  const { history, canUndo, canRedo, handleUndo, handleRedo, saveToHistory } = useHistory();
   
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [dropTarget, setDropTarget] = useState<{ id: string; position: 'top' | 'bottom' } | null>(null);
-
-  // Undo/Redo
-  const canUndo = history.past.length > 0;
-  const canRedo = history.future.length > 0;
-
-  const handleUndo = () => {
-    if (!canUndo) return;
-    
-    const newPast = [...history.past];
-    const previous = newPast.pop()!;
-    
-    setHistory({
-      past: newPast,
-      present: previous,
-      future: [history.present, ...history.future]
-    });
-  };
-
-  const handleRedo = () => {
-    if (!canRedo) return;
-    
-    const newFuture = [...history.future];
-    const next = newFuture.shift()!;
-    
-    setHistory({
-      past: [...history.past, history.present],
-      present: next,
-      future: newFuture
-    });
-  };
-
-  // Save state changes
-  const saveToHistory = useCallback((newPresent: WidgetData[]) => {
-    setHistory(prev => ({
-      past: [...prev.past, prev.present],
-      present: newPresent,
-      future: []
-    }));
-  }, []);
 
   // Save/Load
   const handleSave = () => {
@@ -97,29 +56,6 @@ const LayoutBuilder = () => {
     reader.readAsText(file);
   };
 
-  const getDefaultContent = (type: WidgetData['type']): string | string[] => {
-    switch (type) {
-      case 'heading':
-        return 'New Heading';
-      case 'paragraph':
-        return 'New paragraph text';
-      case 'image':
-        return '/api/placeholder/300/200';
-      case 'button':
-        return 'Click me';
-      case 'divider':
-        return '';
-      case 'list':
-        return ['Item 1', 'Item 2', 'Item 3'];
-      case 'card':
-        return 'Card content';
-      case 'columns':
-        return '';
-      default:
-        return '';
-    }
-  };
-
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingOver(false);
@@ -140,19 +76,6 @@ const LayoutBuilder = () => {
       const newWidgets = [...history.present, newWidget];
       saveToHistory(newWidgets);
     }
-  };
-
-  const getDefaultStyle = (type: WidgetData['type']): WidgetStyle => {
-    const baseStyle: WidgetStyle = {
-      textColor: 'text-gray-900',
-      backgroundColor: 'bg-white',
-      fontSize: type === 'heading' ? 'text-2xl' : 'text-base',
-      textAlign: 'left',
-      padding: 'p-4',
-      borderRadius: 'rounded'
-    };
-    
-    return baseStyle;
   };
 
   const handleWidgetDrop = (e: React.DragEvent, targetId: string, position: 'top' | 'bottom') => {
