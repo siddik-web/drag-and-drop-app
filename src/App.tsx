@@ -4,7 +4,7 @@ import React, { createContext, useContext, useReducer, useState, useCallback, us
 import { DndContext, DragOverlay, useDroppable, useDraggable, useSensor, useSensors, PointerSensor, KeyboardSensor } from '@dnd-kit/core'
 import { SortableContext, useSortable, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { useSelectionContainer } from '@air/react-drag-to-select'
+import { SelectionArea, useSelectionContainer } from '@air/react-drag-to-select'
 import { X, GripVertical, Undo, Redo, AlignLeft, AlignCenter, AlignRight, Type, ChevronDown, Layers, Group, Ungroup, Copy, ClipboardPasteIcon as Paste } from 'lucide-react'
 
 import { Button } from "@/components/ui/button"
@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { useSidebar } from "@/components/ui/sidebar"
 
 // Types
 type ItemType = 'item' | 'group'
@@ -179,7 +181,7 @@ function canvasReducer(state: State, action: Action): State {
 // Grid Cell component
 const GridCell: React.FC<{ element: DraggableElement }> = ({ element }) => {
   const { dispatch } = useContext(CanvasContext)!
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: element.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: element.id })
   
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -192,6 +194,8 @@ const GridCell: React.FC<{ element: DraggableElement }> = ({ element }) => {
     textAlign: element.textAlign,
     fontSize: `${element.fontSize}px`,
     zIndex: element.layer,
+    opacity: isDragging ? 0.5 : 1,
+    cursor: isDragging ? 'grabbing' : 'grab',
   }
 
   const handleResize = (e: React.MouseEvent, direction: 'width' | 'height') => {
@@ -225,7 +229,7 @@ const GridCell: React.FC<{ element: DraggableElement }> = ({ element }) => {
   })
 
   return (
-    <Card ref={setNodeRef} style={style} className={`p-4 ${element.backgroundColor}`} {...attributes} {...listeners} {...handleMove.listeners} {...handleMove.attributes}>
+    <Card ref={setNodeRef} style={style} className={`p-4 ${element.backgroundColor}`} {...attributes} {...listeners} {...handleMove.listeners} {...handleMove.attributes} data-id={element.id}>
       <CardContent className="p-0">
         <div className="flex justify-between items-center mb-2">
           <GripVertical size={16} className="cursor-move text-gray-400" />
@@ -445,9 +449,23 @@ const LayerItem: React.FC<{ item: DraggableElement }> = ({ item }) => {
 const Canvas: React.FC = () => {
   const { state, dispatch } = useContext(CanvasContext)!
   const { setNodeRef } = useDroppable({ id: 'canvas' })
+  const { open: isSidebarOpen, toggleSidebar } = useSidebar()
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [copiedItems, setCopiedItems] = useState<DraggableElement[]>([])
   const canvasRef = useRef<HTMLDivElement>(null)
+
+  const { DragSelection, SelectionRectangle } = useSelectionContainer({
+    onSelectionChange: (selectedElements) => {
+      const selectedIds = selectedElements.map(el => el.getAttribute('data-id') || '')
+      setSelectedItems(selectedIds.filter(id => id !== ''))
+    },
+    selectionProps: {
+      style: {
+        border: '2px solid #4299e1',
+        backgroundColor: 'rgba(66, 153, 225, 0.3)',
+      },
+    },
+  })
 
   const handleItemClick = useCallback((id: string, event: React.MouseEvent) => {
     if (event.ctrlKey || event.metaKey) {
@@ -490,14 +508,6 @@ const Canvas: React.FC = () => {
     })
   }, [copiedItems, dispatch])
 
-  const { DragSelection } = useSelectionContainer({
-    onSelect: (selectedElements) => {
-      const selectedIds = selectedElements.map(el => el.id)
-      setSelectedItems(selectedIds)
-    },
-    selectableTargets: '[data-selectable]',
-    container: canvasRef.current,
-  })
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -527,6 +537,7 @@ const Canvas: React.FC = () => {
       }}
     >
       <DragSelection />
+      <SelectionRectangle />
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Canvas</h2>
         <div className="flex space-x-2">
@@ -555,6 +566,7 @@ const Canvas: React.FC = () => {
             onClick={(e) => handleItemClick(item.id, e)}
             className={`relative ${selectedItems.includes(item.id) ? 'ring-2 ring-blue-500' : ''}`}
             data-selectable
+            data-id={item.id}
           >
             <GridCell element={item} />
           </div>
@@ -573,7 +585,7 @@ export default function App() {
   })
 
   const [activeId, setActiveId] = useState<string | null>(null)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const { open: isSidebarOpen, toggleSidebar } = useSidebar()
   const [isLayersPanelOpen, setIsLayersPanelOpen] = useState(true)
 
   const sidebarItems: DraggableElement[] = [
@@ -597,7 +609,7 @@ export default function App() {
     if (active.id !== over.id) {
       const activeItem = sidebarItems.find(item => item.id === active.id) ||
                          state.present.find(item => item.id === active.id)
-      
+    
       if (!activeItem) {
         setActiveId(null)
         return
@@ -615,6 +627,21 @@ export default function App() {
           layer: state.present.length // Set the layer to be on top
         }
         dispatch({ type: 'ADD_ITEM', payload: newItem })
+      } else {
+        // If moving an existing canvas item
+        const updatedItems = state.present.map(item => {
+          if (item.id === active.id) {
+            const rect = (event.activatorEvent.target as HTMLElement).getBoundingClientRect()
+            const x = snapToGrid(event.activatorEvent.clientX - rect.left)
+            const y = snapToGrid(event.activatorEvent.clientY - rect.top)
+            return {
+              ...item,
+              gridArea: `${y / GRID_SIZE + 1} / ${x / GRID_SIZE + 1} / ${item.gridArea.split('/')[2]} / ${item.gridArea.split('/')[3]}`
+            }
+          }
+          return item
+        })
+        dispatch({ type: 'REORDER_LAYERS', payload: updatedItems })
       }
     }
 
@@ -623,84 +650,86 @@ export default function App() {
 
   return (
     <CanvasContext.Provider value={{ state, dispatch }}>
-      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="flex flex-col h-screen">
-          <header className="flex justify-between items-center p-4 bg-gray-200">
-            <h1 className="text-2xl font-bold">Canvas App</h1>
-            <div className="flex space-x-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => dispatch({ type: 'UNDO' })}
-                      disabled={state.past.length === 0}
-                    >
-                      <Undo size={16} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Undo</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => dispatch({ type: 'REDO' })}
-                      disabled={state.future.length === 0}
-                    >
-                      <Redo size={16} />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Redo</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+      <SidebarProvider>
+        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          <div className="flex flex-col h-screen">
+            <header className="flex justify-between items-center p-4 bg-gray-200">
+              <h1 className="text-2xl font-bold">Canvas App</h1>
+              <div className="flex space-x-2">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => dispatch({ type: 'UNDO' })}
+                        disabled={state.past.length === 0}
+                      >
+                        <Undo size={16} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Undo</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => dispatch({ type: 'REDO' })}
+                        disabled={state.future.length === 0}
+                      >
+                        <Redo size={16} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Redo</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </header>
+            <div className="flex flex-1 overflow-hidden">
+              <div className={`transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-64' : 'w-0'}`}>
+                {isSidebarOpen && <Sidebar items={sidebarItems} />}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10"
+                onClick={toggleSidebar}
+              >
+                {isSidebarOpen ? '<' : '>'}
+              </Button>
+              <Canvas />
+              <div className={`transition-all duration-300 ease-in-out ${isLayersPanelOpen ? 'w-64' : 'w-0'}`}>
+                {isLayersPanelOpen && <LayersPanel />}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10"
+                onClick={() => setIsLayersPanelOpen(!isLayersPanelOpen)}
+              >
+                {isLayersPanelOpen ? '>' : '<'}
+              </Button>
             </div>
-          </header>
-          <div className="flex flex-1 overflow-hidden">
-            <div className={`transition-all duration-300 ease-in-out ${isSidebarOpen ? 'w-64' : 'w-0'}`}>
-              {isSidebarOpen && <Sidebar items={sidebarItems} />}
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            >
-              {isSidebarOpen ? '<' : '>'}
-            </Button>
-            <Canvas />
-            <div className={`transition-all duration-300 ease-in-out ${isLayersPanelOpen ? 'w-64' : 'w-0'}`}>
-              {isLayersPanelOpen && <LayersPanel />}
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10"
-              onClick={() => setIsLayersPanelOpen(!isLayersPanelOpen)}
-            >
-              {isLayersPanelOpen ? '>' : '<'}
-            </Button>
           </div>
-        </div>
-        <DragOverlay>
-          {activeId ? (
-            <Card className="p-2 bg-white border border-gray-300">
-              <CardContent className="p-0">
-                {sidebarItems.find((item) => item.id === activeId)?.content || 
-                 state.present.find((item) => item.id === activeId)?.content}
-              </CardContent>
-            </Card>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+          <DragOverlay>
+            {activeId ? (
+              <Card className="p-2 bg-white border border-gray-300">
+                <CardContent className="p-0">
+                  {sidebarItems.find((item) => item.id === activeId)?.content || 
+                   state.present.find((item) => item.id === activeId)?.content}
+                </CardContent>
+              </Card>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      </SidebarProvider>
     </CanvasContext.Provider>
   )
 }
